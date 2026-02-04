@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumora 蘊癒 | 身體情緒地圖校準</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;500&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --lumora-dark: #6e655e;
+            --lumora-mid: #8b8279;
+            --lumora-light: #b2aaa2;
+            --lumora-bg: #f7f5f2;
+            --accent-gold: #d4c4b5;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--lumora-bg);
+            color: var(--lumora-dark);
+            scroll-behavior: smooth;
+        }
+        .serif { font-family: 'Noto Serif TC', serif; }
+        .brand-font { font-family: 'Cinzel', serif; }
+        
+        /* Logo Placeholder Styling */
+        .logo-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-symbol {
+            width: 60px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--lumora-light) 0%, var(--lumora-dark) 100%);
+            mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.85 9.15L22 12L14.85 14.85L12 22L9.15 14.85L2 12L9.15 9.15L12 2Z"/></svg>') no-repeat center;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.85 9.15L22 12L14.85 14.85L12 22L9.15 14.85L2 12L9.15 9.15L12 2Z"/></svg>') no-repeat center;
+            margin-bottom: 4px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2rem;
+        }
+
+        .symptom-checkbox:checked + label {
+            background-color: var(--lumora-dark);
+            color: white;
+            border-color: var(--lumora-dark);
+            box-shadow: 0 10px 15px -3px rgba(110, 101, 94, 0.2);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at center, rgba(212, 196, 181, 0.2) 0%, transparent 70%);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="w-full fixed top-0 z-50 bg-[#f7f5f2]/90 backdrop-blur-md border-b border-stone-200/40">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex flex-col items-center">
+                <span class="brand-font text-2xl tracking-[0.2em] font-semibold text-stone-700 leading-none">LUMORA</span>
+                <span class="serif text-[10px] tracking-[0.5em] text-stone-400 mt-1 uppercase">蘊癒</span>
+            </div>
+            <div class="hidden md:flex gap-10 text-[11px] tracking-widest text-stone-400 font-bold uppercase">
+                <a href="#decoder" class="hover:text-stone-800 transition">檢測儀</a>
+                <a href="#reflection" class="hover:text-stone-800 transition">靈魂對談</a>
+                <a href="#" class="hover:text-stone-800 transition">關於品牌</a>
+            </div>
+            <button onclick="scrollToSection('decoder')" class="bg-stone-800 text-white text-[10px] tracking-widest px-6 py-2.5 rounded-full hover:bg-stone-700 transition uppercase">Start</button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="pt-48 pb-24 px-6 max-w-5xl mx-auto text-center relative hero-gradient">
+        <div class="logo-box mb-8 animate-float">
+            <!-- 模擬 Logo 的視覺中心 -->
+            <div class="logo-symbol"></div>
+            <div class="w-1 h-1 rounded-full bg-stone-300"></div>
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-bold text-stone-800 mb-8 serif leading-[1.3]">
+            與身體的<span class="italic text-stone-400 font-light">真實實相</span>對談
+        </h1>
+        <p class="text-stone-500 max-w-xl mx-auto leading-relaxed text-sm md:text-base tracking-wide">
+            在 Lumora 的時空裡，我們不只修復身體，更在乎靈魂的安放。<br>
+            這份檢測將引領你穿越表象的疼痛，找回內在的平衡。
+        </p>
+    </header>
+
+    <main class="pb-32">
+        <!-- Section 1: Symptom Selector (Blind Test) -->
+        <section id="decoder" class="py-16 px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="h-[1px] flex-grow bg-stone-200"></div>
+                    <span class="text-[10px] tracking-[0.3em] text-stone-400 font-bold uppercase">Step 01 / Physical Signal</span>
+                    <div class="h-[1px] flex-grow bg-stone-200"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="symptom-grid">
+                    <!-- JS will inject symptoms here -->
+                </div>
+                
+                <div class="mt-20 text-center">
+                    <button onclick="scrollToSection('reflection')" class="group relative px-12 py-4 text-sm tracking-widest text-white transition-all duration-300">
+                        <span class="absolute inset-0 bg-stone-800 rounded-full transition-transform group-hover:scale-105"></span>
+                        <span class="relative">確認訊號，深層覺察</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Soul Dialogue -->
+        <section id="reflection" class="py-32 px-6 bg-[#f0ede8]/50 border-y border-stone-200/20">
+            <div class="max-w-3xl mx-auto">
+                <div class="glass-card shadow-2xl overflow-hidden">
+                    <div class="px-10 py-8 flex justify-between items-center border-b border-white/40">
+                        <span id="step-indicator" class="text-[10px] font-bold tracking-[0.2em] text-stone-400 uppercase">Insight 1</span>
+                        <div class="flex gap-2" id="progress-dots"></div>
+                    </div>
+
+                    <div class="p-10 md:p-16 min-h-[380px]">
+                        <div id="question-content"></div>
+                    </div>
+
+                    <div class="px-10 py-10 flex justify-between items-center">
+                        <button id="prev-btn" class="text-stone-400 hover:text-stone-800 text-xs font-bold tracking-widest disabled:opacity-0" onclick="changeStep(-1)">PREV</button>
+                        <div class="flex gap-3">
+                            <button id="next-btn" class="bg-stone-800 text-white px-10 py-3 rounded-full text-xs tracking-widest" onclick="changeStep(1)">NEXT</button>
+                            <button id="finish-btn" class="bg-stone-600 text-white px-10 py-3 rounded-full text-xs tracking-widest hidden" onclick="revealAnalysis()">VIEW REPORT</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Summary Report -->
+        <section id="summary-section" class="py-32 px-6 hidden">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-20">
+                    <div class="brand-font text-xs tracking-[0.4em] text-stone-400 mb-4 uppercase">Lumora Calibration Report</div>
+                    <h2 class="text-3xl md:text-5xl serif text-stone-800 mb-4">蘊癒．校準報告</h2>
+                    <div class="w-12 h-[1px] bg-stone-300 mx-auto"></div>
+                </div>
+
+                <div class="grid lg:grid-cols-5 gap-12 items-start">
+                    <!-- Radar -->
+                    <div class="lg:col-span-2 glass-card p-10 shadow-xl border-white/50">
+                        <div style="height: 320px; position: relative;">
+                            <canvas id="energyRadar"></canvas>
+                        </div>
+                        <p class="text-[10px] text-center text-stone-400 mt-6 tracking-widest">ENERGY BALANCE CHART</p>
+                    </div>
+
+                    <!-- Analysis -->
+                    <div class="lg:col-span-3 space-y-8">
+                        <div id="top-center-box" class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-stone-100">
+                            <h4 class="text-stone-800 serif text-2xl mb-4" id="main-area-name">解析中...</h4>
+                            <p class="text-stone-500 text-sm leading-relaxed mb-8 italic" id="main-area-insight"></p>
+                            <div class="p-6 bg-stone-50 rounded-2xl border border-stone-100">
+                                <span class="text-[10px] font-bold text-stone-400 block mb-3 uppercase tracking-widest italic">Lumora Daily Practice</span>
+                                <span id="main-area-tip" class="text-sm text-stone-700 leading-relaxed"></span>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#f0ede8] p-10 rounded-[2.5rem]">
+                            <h4 class="serif text-stone-800 mb-6 text-lg">內在覺察筆記</h4>
+                            <div id="user-reflection-summary" class="space-y-6 text-xs text-stone-500 leading-relaxed"></div>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-6 pt-10">
+                            <button onclick="copyToClipboard()" class="bg-stone-800 text-white px-12 py-4 rounded-full text-[11px] tracking-[0.2em] hover:shadow-2xl transition">COPY & BOOKING</button>
+                            <p id="copy-msg" class="text-[10px] text-stone-400 font-bold h-4"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-20 bg-stone-800 text-white text-center">
+        <div class="brand-font text-2xl tracking-[0.3em] mb-4">LUMORA</div>
+        <p class="text-[10px] tracking-[0.5em] text-stone-500 mb-8 uppercase">蘊癒身心能量校準</p>
+        <div class="w-8 h-[1px] bg-stone-600 mx-auto mb-8"></div>
+        <p class="text-[9px] text-stone-600 uppercase tracking-widest">© 2024 Lumora Studio. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const symptomPool = [
+            { id: 'h1', text: '偏頭痛 / 腦袋發熱感', area: 'head' },
+            { id: 'h2', text: '眼壓高 / 下顎緊咬', area: 'head' },
+            { id: 't1', text: '喉嚨卡感 / 乾咳', area: 'throat' },
+            { id: 't2', text: '頸部僵硬 / 聲音沙啞', area: 'throat' },
+            { id: 'c1', text: '胸悶 / 呼吸短淺', area: 'heart' },
+            { id: 'c2', text: '心悸 / 壓抑的沉重感', area: 'heart' },
+            { id: 's1', text: '胃食道逆流 / 胃痛', area: 'stomach' },
+            { id: 's2', text: '消化不良 / 緊張腹瀉', area: 'stomach' },
+            { id: 'r1', text: '腰部痠痛 / 薦骨僵硬', area: 'root' },
+            { id: 'r2', text: '腿部沉重 / 莫名疲累', area: 'root' },
+            { id: 'h3', text: '睡眠品質差 / 難以入睡', area: 'head' },
+            { id: 'c3', text: '背部肩胛骨之間緊繃', area: 'heart' }
+        ];
+
+        const areaDetails = {
+            head: { name: "頭部中心", insight: "思考過載與控制欲。您可能正試圖用邏輯去分析那些不合邏輯的情緒，導致大腦無法冷卻。", tip: "關閉訊息來源，進行 5 分鐘的無目的漫步，想像清風吹過大腦。" },
+            throat: { name: "喉嚨中心", insight: "表達受阻與委曲求全。您的真實想法被壓抑了，或是正為了迎合環境而說出違心的話。", tip: "對著鏡子溫柔地對自己說：『我聽見你了』，或進行喉部溫敷。" },
+            heart: { name: "情緒核心", insight: "情感積壓與自我保護。胸口的緊繃感顯示您正處於防衛狀態，難以向他人或自己敞開。", tip: "雙手交疊於心口，感受溫暖，練習每天記錄一件微小的感動。" },
+            stomach: { name: "生存意志", insight: "競爭焦慮與消化壓力。這通常與權威感失衡或對現狀的不安有關，您的身體在抗拒某些環境。", tip: "進食時放下手機，專注於咀嚼，練習區分『我的責任』與『他人的期待』。" },
+            root: { name: "原動力/根部", insight: "根基不穩與能量透支。您可能正在消耗不屬於您的能量，感到腳步浮躁或過度疲倦。", tip: "赤腳踩地，感受大地的穩固，或增加腿部拉伸，找回踏實感。" }
+        };
+
+        const questions = [
+            { q: "此刻哪個部位的感覺最明顯？", desc: "不需要分析，只需如實描述。", placeholder: "例如：緊繃的、空洞的..." },
+            { q: "這份感覺若有顏色，它會是什麼顏色？", desc: "閉上眼，讓直覺帶領你。", placeholder: "例如：溫潤的米灰、沉悶的深紫..." },
+            { q: "如果這個部位有話想說，它想說什麼？", desc: "它是你最忠實的夥伴。", placeholder: "它說：我想被看見..." },
+            { q: "生活中，哪件事讓你產生類似的感覺？", desc: "試著連結到最近的一幕場景。", placeholder: "當我被迫接受不合理的要求時..." },
+            { q: "如果這份不適是禮物，它在提醒你什麼？", desc: "Lumora 相信，所有的疼痛都是指引。", placeholder: "提醒我該停下來愛自己了。" }
+        ];
+
+        let currentStep = 0;
+        let userAnswers = Array(questions.length).fill("");
+        let radarChart;
+
+        window.onload = () => {
+            renderSymptoms();
+            renderQuestion();
+            renderDots();
+        };
+
+        function renderSymptoms() {
+            const grid = document.getElementById('symptom-grid');
+            const shuffled = [...symptomPool].sort(() => Math.random() - 0.5);
+            grid.innerHTML = shuffled.map(s => `
+                <div class="relative group">
+                    <input type="checkbox" id="${s.id}" class="hidden symptom-checkbox" data-area="${s.area}">
+                    <label for="${s.id}" class="flex items-center justify-center text-center p-6 rounded-3xl border border-stone-200 bg-white cursor-pointer transition-all duration-300 text-[13px] text-stone-500 hover:border-stone-400 hover:text-stone-800">
+                        ${s.text}
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentStep];
+            document.getElementById('question-content').innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl md:text-3xl serif text-stone-800 mb-2 leading-tight">${q.q}</h3>
+                    <p class="text-stone-400 text-xs mb-8 tracking-widest">${q.desc}</p>
+                    <textarea id="current-ans" class="w-full p-8 bg-stone-50/50 border border-stone-100 rounded-3xl h-40 focus:ring-1 focus:ring-stone-300 outline-none text-stone-700 text-sm italic" placeholder="${q.placeholder}">${userAnswers[currentStep]}</textarea>
+                </div>
+            `;
+            document.getElementById('step-indicator').innerText = `Insight ${currentStep + 1} of ${questions.length}`;
+            updateDots();
+        }
+
+        function renderDots() {
+            const dots = document.getElementById('progress-dots');
+            dots.innerHTML = questions.map((_, i) => `<div class="h-0.5 w-6 md:w-10 rounded-full bg-stone-200 transition-all dot" id="dot-${i}"></div>`).join('');
+        }
+
+        function updateDots() {
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.style.backgroundColor = i <= currentStep ? '#6e655e' : '#e7e5e4';
+            });
+        }
+
+        function changeStep(dir) {
+            userAnswers[currentStep] = document.getElementById('current-ans').value;
+            currentStep += dir;
+            document.getElementById('prev-btn').disabled = currentStep === 0;
+            if (currentStep === questions.length - 1) {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('finish-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('finish-btn').classList.add('hidden');
+            }
+            renderQuestion();
+        }
+
+        function revealAnalysis() {
+            userAnswers[currentStep] = document.getElementById('current-ans').value;
+            document.getElementById('summary-section').classList.remove('hidden');
+            document.getElementById('summary-section').scrollIntoView({ behavior: 'smooth' });
+
+            const counts = { head: 0, throat: 0, heart: 0, stomach: 0, root: 0 };
+            document.querySelectorAll('.symptom-checkbox:checked').forEach(cb => counts[cb.dataset.area]++);
+
+            initChart(Object.values(counts));
+
+            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] >= counts[b] ? a : b);
+            const data = areaDetails[maxKey];
+            
+            document.getElementById('main-area-name').innerText = counts[maxKey] > 0 ? `焦點解析：${data.name}` : "能量分佈平衡";
+            document.getElementById('main-area-insight').innerText = counts[maxKey] > 0 ? data.insight : "目前身體處於平穩狀態。";
+            document.getElementById('main-area-tip').innerText = counts[maxKey] > 0 ? data.tip : "維持目前的覺察，Lumora 伴您同行。";
+
+            document.getElementById('user-reflection-summary').innerHTML = questions.map((q, i) => 
+                userAnswers[i] ? `<div><span class="text-stone-400 block mb-2 uppercase tracking-[0.2em] font-bold">Insight ${i+1}</span><p class="text-stone-600">${userAnswers[i]}</p></div>` : ""
+            ).join('');
+        }
+
+        function initChart(values) {
+            if(radarChart) radarChart.destroy();
+            const ctx = document.getElementById('energyRadar').getContext('2d');
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['頭部', '喉嚨', '心胸', '腹胃', '根部'],
+                    datasets: [{
+                        data: values,
+                        backgroundColor: 'rgba(110, 101, 94, 0.1)',
+                        borderColor: '#6e655e',
+                        borderWidth: 1.5,
+                        pointBackgroundColor: '#6e655e',
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: { 
+                        r: { 
+                            suggestedMin: 0, suggestedMax: 3, 
+                            ticks: { display: false, stepSize: 1 },
+                            grid: { color: 'rgba(110, 101, 94, 0.1)' },
+                            angleLines: { color: 'rgba(110, 101, 94, 0.1)' },
+                            pointLabels: { font: { family: "'Noto Serif TC'", size: 12 }, color: '#6e655e' }
+                        } 
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function copyToClipboard() {
+            const focus = document.getElementById('main-area-name').innerText;
+            const text = `【Lumora 蘊癒．校準報告回傳】\n核心警示：${focus}\n解析：${document.getElementById('main-area-insight').innerText}\n\n我的覺察：\n${userAnswers.map((a, i) => `${i+1}. ${a}`).join('\n')}\n\n我想預約校準諮詢。`;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('copy-msg').innerText = "報告已複製，請前往 LINE 貼上預約。";
+            });
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
